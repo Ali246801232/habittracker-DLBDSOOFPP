@@ -1,2 +1,2 @@
-# habit-tracker-DLBDSOOFPP
+# habit-tracker
 Habit Tracker Project for Object Oriented and Functional Programming with Python (DLBDSOOFPP)
