@@ -1,0 +1,16 @@
+<b>Habit Tracker</b> is a command-line application to help you track and manage your habits.
+
+Use arrow keys and ENTER for navigation.
+
+<b>Managing habits</b>
+- Select <u>"Habits"</u> in the main menu to open the Habit Manager table.
+- The opened table will display all currently tracked habits with details and completion status.
+- Press <u>ENTER</u> with a habit selected to mark it complete/incomplete, modify it, or delete it.
+- Press the <u>"New Habit"</u> button to create a new habit.
+
+<b>Viewing analytics</b>
+- Select <u>"Analytics"</u> in the main menu to open the Analytics Viewer table.
+- The opened table will display all currently tracked habits with analytics.
+- Press the <u>"Overall Analytics"</u> button to view analytics for all habits.
+- Press the <u>"Filter Habits"</u> button to filter habits by periodicity or specify a period.
+- Filters will also limit overall analytics.
