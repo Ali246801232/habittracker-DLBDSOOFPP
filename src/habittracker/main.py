@@ -1,9 +1,10 @@
 from .cli.app import HabitTrackerApp
-from .db_handler import initialize_database, is_first_run
+from .db_handler import initialize_database, is_first_run, set_db_path
 from .habits import load_habits, seed_sample_data
 
 
 def main():
+    set_db_path()
     initialize_database()
     load_habits()
     if is_first_run():

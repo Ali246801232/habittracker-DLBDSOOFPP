@@ -1,8 +1,20 @@
 import sqlite3
+from pathlib import Path
 
-from .cli.utils import relative_path
+from platformdirs import user_data_dir
 
-DB_PATH = relative_path(__file__, "habits.db")
+DB_PATH = None
+
+
+def default_db_path() -> str:
+    data_dir = Path(user_data_dir("HabitTracker"))
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return str(data_dir / "habits.db")
+
+
+def set_db_path(path=None):
+    global DB_PATH
+    DB_PATH = path if path else default_db_path()
 
 
 def _get_conn():
@@ -42,15 +54,7 @@ def initialize_database():
                     completed_at TEXT NOT NULL,
                     FOREIGN KEY (habit_uuid) REFERENCES habits(uuid) ON DELETE CASCADE
                 );
-
-                CREATE TABLE IF NOT EXISTS flags (
-                    key TEXT PRIMARY KEY,
-                    value TEXT NOT NULL
-                )
                 """
-            )
-            conn.execute(
-                "INSERT OR IGNORE INTO flags (key, value) VALUES ('first_run', '1')"
             )
     except sqlite3.Error as e:
         print(f"Database initialization failed: {e}")
@@ -161,16 +165,5 @@ def save_all(data: dict):
 
 
 def is_first_run() -> bool:
-    """Return True if this is the first time the app runs"""
-    try:
-        with _get_conn() as conn:
-            row = conn.execute(
-                "SELECT value FROM flags WHERE key = 'first_run'"
-            ).fetchone()
-            if row and row["value"] == "1":
-                conn.execute("UPDATE flags SET value = '0' WHERE key = 'first_run'")
-                return True
-            return False
-    except sqlite3.Error as e:
-        print(f"Failed to check first_run flag: {e}")
-        return False
+    """Return True if the database file does not yet exist"""
+    return DB_PATH and not Path(DB_PATH).exists()

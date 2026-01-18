@@ -1,10 +1,12 @@
+from importlib import resources
+
 from prompt_toolkit import HTML
 from prompt_toolkit import print_formatted_text as print
 
 from .. import __version__ as VERSION
 from .analytics_viewer import AnalyticsViewer
 from .habit_manager import HabitManager
-from .utils import clear_screen, radio_list, relative_path
+from .utils import clear_screen, radio_list
 
 GITHUB_REPO = "Ali246801232/habittracker-DLBDSOOFPP"
 
@@ -46,7 +48,7 @@ class HabitTrackerApp:
     def _help(self):
         """Display help information"""
         try:
-            help_path = relative_path(__file__, "help.txt")
+            help_path = resources.files("habittracker.data").joinpath("help.txt")
             with open(help_path, "r") as f:
                 print(HTML(f.read()))
         except FileNotFoundError:

@@ -10,9 +10,9 @@ def use_temp_db():
     temp_file = tempfile.NamedTemporaryFile(delete=False)
     temp_file.close()
     original_path = db_handler.DB_PATH
-    db_handler.DB_PATH = temp_file.name
+    db_handler.set_db_path(temp_file.name)
     yield
-    db_handler.DB_PATH = original_path
+    db_handler.set_db_path(original_path)
 
 def test_initialize_database():
     """Test database initialization creates tables."""

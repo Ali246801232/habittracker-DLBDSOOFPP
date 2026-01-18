@@ -2,11 +2,11 @@ import json
 import typing
 import uuid
 from datetime import datetime, time, timedelta
+from importlib import resources
 
 from dateutil.relativedelta import relativedelta
 
 from . import db_handler
-from .cli.utils import relative_path
 
 
 class Period(typing.TypedDict):
@@ -220,7 +220,6 @@ def load_habits():
 
 def save_habits():
     """Save all habits to database"""
-    global HABITS
     data = {}
 
     for habit_uuid, habit in HABITS.get_habits().items():
@@ -259,7 +258,7 @@ def first_start():
 
 
 def seed_sample_data(file_path: str = "sample_data.json"):
-    file_path = relative_path(__file__, file_path)
+    file_path = resources.files("habittracker.data").joinpath(file_path)
     with open(file_path, "r") as f:
         default_habits = json.load(f)
 
