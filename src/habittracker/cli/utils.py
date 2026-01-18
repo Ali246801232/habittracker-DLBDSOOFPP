@@ -1,20 +1,23 @@
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.containers import Window
-from prompt_toolkit.application import Application
-from prompt_toolkit.layout import Layout, HSplit
-from datetime import date, timedelta
 import calendar
 import os
+from datetime import date, timedelta
+
+from prompt_toolkit.application import Application
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.layout import HSplit, Layout
+from prompt_toolkit.layout.containers import Window
+from prompt_toolkit.layout.controls import FormattedTextControl
 
 
 def clear_screen():
     """Clear the terminal screen."""
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
+
 
 def relative_path(file, file_path):
-    """Return a relative path joined """
+    """Return a relative path joined"""
     return os.path.join(os.path.dirname(file), file_path)
+
 
 def radio_list(options: list, default=None):
     """Display an inline radio list with the given options and return the selected option"""
@@ -47,7 +50,7 @@ def radio_list(options: list, default=None):
     @kb.add("enter")
     def select_option(event):
         event.app.exit(result=options[selected_index])
-    
+
     control = FormattedTextControl(get_menu_text(), show_cursor=False)
     window = Window(content=control)
     layout = Layout(window)
@@ -56,8 +59,9 @@ def radio_list(options: list, default=None):
     return app.run()
 
 
-
-def calendar_picker(default: date = None, min_date: date = None, max_date: date = None) -> date:
+def calendar_picker(
+    default: date = None, min_date: date = None, max_date: date = None
+) -> date:
     """Displays a interactive calender and returns the selected date"""
     today = date.today()
     current = default or today
@@ -70,8 +74,10 @@ def calendar_picker(default: date = None, min_date: date = None, max_date: date 
     def _clamp(y, m, d):
         nonlocal year, month, selected_day
         dt = date(y, m, d)
-        if min_date: dt = max(dt, min_date)
-        if max_date: dt = min(dt, max_date)
+        if min_date:
+            dt = max(dt, min_date)
+        if max_date:
+            dt = min(dt, max_date)
         year, month, selected_day = dt.year, dt.month, dt.day
 
     def _change_month(delta):
@@ -85,8 +91,10 @@ def calendar_picker(default: date = None, min_date: date = None, max_date: date 
         nonlocal year, month, selected_day
         try:
             new_date = date(year, month, selected_day) + timedelta(days=delta_days)
-            if min_date: new_date = max(new_date, min_date)
-            if max_date: new_date = min(new_date, max_date)
+            if min_date:
+                new_date = max(new_date, min_date)
+            if max_date:
+                new_date = min(new_date, max_date)
             year, month, selected_day = new_date.year, new_date.month, new_date.day
         except ValueError:
             _change_month(1 if delta_days > 0 else -1)
@@ -111,16 +119,20 @@ def calendar_picker(default: date = None, min_date: date = None, max_date: date 
         return "\n".join([header, weekdays, *week_lines])
 
     @kb.add("left")
-    def _(event): _move(-1)
+    def _(event):
+        _move(-1)
 
     @kb.add("right")
-    def _(event): _move(1)
+    def _(event):
+        _move(1)
 
     @kb.add("up")
-    def _(event): _move(-7)
+    def _(event):
+        _move(-7)
 
     @kb.add("down")
-    def _(event): _move(7)
+    def _(event):
+        _move(7)
 
     @kb.add("enter")
     def _(event):

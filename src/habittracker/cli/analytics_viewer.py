@@ -1,10 +1,13 @@
-from prompt_toolkit import prompt, HTML, print_formatted_text as print
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 
-from .. import habits
-from .. import analytics
+from prompt_toolkit import HTML
+from prompt_toolkit import print_formatted_text as print
+from prompt_toolkit import prompt
+
+from .. import analytics, habits
 from .habit_table import HabitTable
-from .utils import radio_list, clear_screen, calendar_picker
+from .utils import calendar_picker, clear_screen, radio_list
+
 
 class AnalyticsViewer(HabitTable):
     """Paginated table to view habit anallytics"""
@@ -15,7 +18,7 @@ class AnalyticsViewer(HabitTable):
             "None": self._action_none,
             "Overall Analytics": self._action_overall_analytics,
             "Filter Habits": self._action_filter_habits,
-            "Quit": self._action_quit
+            "Quit": self._action_quit,
         }
         self._BUTTONS = ["Overall Analytics", "Filter Habits", "Quit"]
         self._ROW_ACTION = "None"
@@ -43,7 +46,9 @@ class AnalyticsViewer(HabitTable):
             },
             "Highest Streak": {
                 "width": 16,
-                "value": lambda habit: str(analytics.HabitAnalytics(habit).highest_streak()),
+                "value": lambda habit: str(
+                    analytics.HabitAnalytics(habit).highest_streak()
+                ),
                 "align": "center",
             },
             "Completion Rate": {
@@ -62,9 +67,13 @@ class AnalyticsViewer(HabitTable):
         group_analytics = analytics.GroupAnalytics(list(self.DATA.values()))
         highest_streak = group_analytics.highest_streak()
         average_completion_rate = group_analytics.average_completion_rate()
-        print(HTML(f"<b>Overall Analytics:</b>"))
+        print(HTML("<b>Overall Analytics:</b>"))
         print(HTML(f"  <b>Highest Streak Among All Habits:</b> {highest_streak}"))
-        print(HTML(f"  <b>Average Completion Rate:</b> {average_completion_rate * 100:.2f}%"))
+        print(
+            HTML(
+                f"  <b>Average Completion Rate:</b> {average_completion_rate * 100:.2f}%"
+            )
+        )
         print()
         input("\nPress Enter to return to the table.")
         clear_screen()
@@ -80,7 +89,9 @@ class AnalyticsViewer(HabitTable):
                 print(HTML("<b>Period unit:</b>"))
                 periodicity_unit = radio_list(list(habits.PERIODICITY_UNITS.keys()))
                 while True:
-                    count_input = prompt(HTML(f"<b>Period count:</b> "), default="1").strip()
+                    count_input = prompt(
+                        HTML("<b>Period count:</b> "), default="1"
+                    ).strip()
                     if not count_input:
                         periodicity_amount = 1
                         break
@@ -88,23 +99,38 @@ class AnalyticsViewer(HabitTable):
                         periodicity_amount = int(count_input)
                         break
                     print("Please enter a positive integer.")
-                
-                self._FILTER = lambda habit: habit.periodicity == {"amount": periodicity_amount, "unit": periodicity_unit}
-            
+
+                self._FILTER = lambda habit: habit.periodicity == {
+                    "amount": periodicity_amount,
+                    "unit": periodicity_unit,
+                }
+
             case "Date":
                 print(HTML("<b>Start date:</b>"))
-                analytics.SINCE = datetime.combine(calendar_picker(min_date=habits.first_start().date(), max_date=habits.now().date()), time.min)
+                analytics.SINCE = datetime.combine(
+                    calendar_picker(
+                        min_date=habits.first_start().date(),
+                        max_date=habits.now().date(),
+                    ),
+                    time.min,
+                )
                 print(HTML("<b>End date:</b>"))
-                analytics.UNTIL = datetime.combine(calendar_picker(min_date=habits.first_start().date(), max_date=habits.now().date()), time.max)
-            
+                analytics.UNTIL = datetime.combine(
+                    calendar_picker(
+                        min_date=habits.first_start().date(),
+                        max_date=habits.now().date(),
+                    ),
+                    time.max,
+                )
+
             case "Remove Filters":
                 self._FILTER = None
                 analytics.SINCE = habits.first_start()
                 analytics.UNTIL = habits.now()
-            
+
             case "Back":
                 return False
-        
+
         clear_screen()
 
     def _action_quit(self):

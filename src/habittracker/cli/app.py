@@ -1,17 +1,17 @@
-from prompt_toolkit import print_formatted_text as print, HTML
-import requests
-import os
-
-from .utils import clear_screen, radio_list, relative_path
-from .habit_manager import HabitManager
-from .analytics_viewer import AnalyticsViewer
+from prompt_toolkit import HTML
+from prompt_toolkit import print_formatted_text as print
 
 from .. import __version__ as VERSION
+from .analytics_viewer import AnalyticsViewer
+from .habit_manager import HabitManager
+from .utils import clear_screen, radio_list, relative_path
+
 GITHUB_REPO = "Ali246801232/habittracker-DLBDSOOFPP"
+
 
 class HabitTrackerApp:
     def run(self):
-        clear_screen()       
+        clear_screen()
         choice = ""
         while choice != "Quit":
             choice = self._display_menu()
@@ -27,12 +27,7 @@ class HabitTrackerApp:
 
     def _display_menu(self):
         """Display main menu"""
-        options = [
-            "Habits",
-            "Analytics",
-            "Help",
-            "Quit"
-        ]
+        options = ["Habits", "Analytics", "Help", "Quit"]
 
         print(HTML(f"Welcome to <b>Habit Tracker</b> v{VERSION}!"))
         print("\nPlease select an option:")

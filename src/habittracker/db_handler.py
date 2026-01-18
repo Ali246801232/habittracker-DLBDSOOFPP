@@ -1,9 +1,9 @@
 import sqlite3
-from pathlib import Path
 
 from .cli.utils import relative_path
 
 DB_PATH = relative_path(__file__, "habits.db")
+
 
 def _get_conn():
     """Get a connection to the database"""
@@ -11,6 +11,7 @@ def _get_conn():
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
+
 
 def initialize_database():
     """Initialize databse with habits, completions, and periods table"""
@@ -41,17 +42,20 @@ def initialize_database():
                     completed_at TEXT NOT NULL,
                     FOREIGN KEY (habit_uuid) REFERENCES habits(uuid) ON DELETE CASCADE
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS flags (
                     key TEXT PRIMARY KEY,
                     value TEXT NOT NULL
                 )
                 """
             )
-            conn.execute("INSERT OR IGNORE INTO flags (key, value) VALUES ('first_run', '1')")
+            conn.execute(
+                "INSERT OR IGNORE INTO flags (key, value) VALUES ('first_run', '1')"
+            )
     except sqlite3.Error as e:
         print(f"Database initialization failed: {e}")
         raise
+
 
 def load_all():
     """Load all habits from database
@@ -70,21 +74,21 @@ def load_all():
 
                 # Habit periods
                 periods = conn.execute(
-                    "SELECT start, end FROM periods WHERE habit_uuid = ?",
-                    (uuid,)
+                    "SELECT start, end FROM periods WHERE habit_uuid = ?", (uuid,)
                 ).fetchall()
 
                 # Habit completions
                 completions = conn.execute(
-                    "SELECT completed_at FROM completions WHERE habit_uuid = ?",
-                    (uuid,)
+                    "SELECT completed_at FROM completions WHERE habit_uuid = ?", (uuid,)
                 ).fetchall()
 
                 # Format as dictionary
                 data[uuid] = {
                     "habit": dict(habit),
                     "periods": [dict(period) for period in periods],
-                    "completions": [completion["completed_at"] for completion in completions],
+                    "completions": [
+                        completion["completed_at"] for completion in completions
+                    ],
                 }
     except sqlite3.Error as e:
         print(f"Failed to load data from database: {e}")
@@ -107,8 +111,7 @@ def save_all(data: dict):
             to_delete = old_uuids - new_uuids
             if to_delete:
                 conn.executemany(
-                    "DELETE FROM habits WHERE uuid = ?",
-                    [(uuid,) for uuid in to_delete]
+                    "DELETE FROM habits WHERE uuid = ?", [(uuid,) for uuid in to_delete]
                 )
 
             # Upsert remaining habits
@@ -133,25 +136,29 @@ def save_all(data: dict):
                         habit["periodicity_unit"],
                         habit["notes"],
                         habit["start_date"],
-                    )
+                    ),
                 )
 
                 # Habit periods
                 conn.execute("DELETE FROM periods WHERE habit_uuid = ?", (uuid,))
                 conn.executemany(
                     "INSERT INTO periods (habit_uuid, start, end) VALUES (?, ?, ?)",
-                    [(uuid, period["start"], period["end"]) for period in data["periods"]]
+                    [
+                        (uuid, period["start"], period["end"])
+                        for period in data["periods"]
+                    ],
                 )
 
                 # Habit completions
                 conn.execute("DELETE FROM completions WHERE habit_uuid = ?", (uuid,))
                 conn.executemany(
                     "INSERT INTO completions (habit_uuid, completed_at) VALUES (?, ?)",
-                    [(uuid, completion) for completion in data["completions"]]
+                    [(uuid, completion) for completion in data["completions"]],
                 )
     except sqlite3.Error as e:
         print(f"Failed to save data to database: {e}")
         raise
+
 
 def is_first_run() -> bool:
     """Return True if this is the first time the app runs"""
@@ -160,10 +167,8 @@ def is_first_run() -> bool:
             row = conn.execute(
                 "SELECT value FROM flags WHERE key = 'first_run'"
             ).fetchone()
-            if row and row["value"] == '1':
-                conn.execute(
-                    "UPDATE flags SET value = '0' WHERE key = 'first_run'"
-                )
+            if row and row["value"] == "1":
+                conn.execute("UPDATE flags SET value = '0' WHERE key = 'first_run'")
                 return True
             return False
     except sqlite3.Error as e:

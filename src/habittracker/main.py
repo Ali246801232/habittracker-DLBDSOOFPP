@@ -1,6 +1,7 @@
-from .habits import load_habits, seed_sample_data
-from .db_handler import initialize_database, is_first_run
 from .cli.app import HabitTrackerApp
+from .db_handler import initialize_database, is_first_run
+from .habits import load_habits, seed_sample_data
+
 
 def main():
     initialize_database()

@@ -1,8 +1,11 @@
-from prompt_toolkit import prompt, HTML, print_formatted_text as print
+from prompt_toolkit import HTML
+from prompt_toolkit import print_formatted_text as print
+from prompt_toolkit import prompt
 
 from .. import habits
-from .utils import radio_list, clear_screen
 from .habit_table import HabitTable
+from .utils import clear_screen, radio_list
+
 
 class HabitManager(HabitTable):
     """Paginated table to display and manage habits"""
@@ -12,7 +15,7 @@ class HabitManager(HabitTable):
         self._ACTIONS = {
             "Edit Habit": self._action_edit_habit,
             "New Habit": self._action_new_habit,
-            "Quit": self._action_quit
+            "Quit": self._action_quit,
         }
         self._ROW_ACTION = "Edit Habit"
         self._BUTTONS = ["New Habit", "Quit"]
@@ -45,7 +48,6 @@ class HabitManager(HabitTable):
             },
         }
 
-
     def _action_edit_habit(self):
         habit = self._get_selected_habit()
         editor = HabitEditor(habit)
@@ -56,7 +58,7 @@ class HabitManager(HabitTable):
         editor = HabitEditor()
         editor.run()
         return False
-    
+
     def _action_quit(self):
         return True
 
@@ -97,7 +99,7 @@ class HabitEditor:
             print("Select an action for the habit:")
             choice = radio_list(options)
             clear_screen()
-            
+
             match choice:
                 case "Mark complete" | "Mark incomplete":
                     self.habit.toggle_completed()
@@ -119,7 +121,6 @@ class HabitEditor:
                     habits.save_habits()
                     return
 
-
     def _input_habit_details(self):
         """Input and return habit details"""
         # Defaults
@@ -127,28 +128,37 @@ class HabitEditor:
             defaults = {
                 "name": self.habit.name,
                 "periodicity": self.habit.periodicity,
-                "notes": self.habit.notes
+                "notes": self.habit.notes,
             }
         else:
             defaults = {
                 "name": "",
                 "periodicity": {"amount": 1, "unit": "days"},
-                "notes": ""
+                "notes": "",
             }
 
         while True:
             clear_screen()
-            
+
             # Name
-            name = prompt(HTML("<b>Habit Name:</b> "), default=defaults["name"]).strip() or defaults["name"]
+            name = (
+                prompt(HTML("<b>Habit Name:</b> "), default=defaults["name"]).strip()
+                or defaults["name"]
+            )
 
             # Period unit
             print(HTML("<b>Period unit:</b>"))
-            periodicity_unit = radio_list(list(habits.PERIODICITY_UNITS.keys()), default=defaults["periodicity"]["unit"])
+            periodicity_unit = radio_list(
+                list(habits.PERIODICITY_UNITS.keys()),
+                default=defaults["periodicity"]["unit"],
+            )
 
             # Period count
             while True:
-                count_input = prompt(HTML(f"<b>Period count:</b> "), default=str(defaults["periodicity"]["amount"])).strip()
+                count_input = prompt(
+                    HTML("<b>Period count:</b> "),
+                    default=str(defaults["periodicity"]["amount"]),
+                ).strip()
                 if not count_input:
                     periodicity_amount = defaults["periodicity"]["amount"]
                     break
@@ -162,18 +172,28 @@ class HabitEditor:
                     print("Please enter a valid integer.")
 
             # Notes
-            notes = prompt(HTML("<b>Notes:</b> "), default=defaults["notes"]).strip() or defaults["notes"]
+            notes = (
+                prompt(HTML("<b>Notes:</b> "), default=defaults["notes"]).strip()
+                or defaults["notes"]
+            )
 
             # Confirm details and return
             print(HTML(f"<b>Habit</b>: {name}"))
             print(HTML(f"<b>Notes</b>: {notes}"))
-            print(HTML(f"<b>Periodicity</b>: Every {periodicity_amount} {periodicity_unit}"))
+            print(
+                HTML(
+                    f"<b>Periodicity</b>: Every {periodicity_amount} {periodicity_unit}"
+                )
+            )
             print("Are these details correct?")
             if radio_list(["Yes", "No"]) == "Yes":
                 return {
                     "name": name,
-                    "periodicity": {"amount": periodicity_amount, "unit": periodicity_unit},
-                    "notes": notes
+                    "periodicity": {
+                        "amount": periodicity_amount,
+                        "unit": periodicity_unit,
+                    },
+                    "notes": notes,
                 }
             else:
                 if self.habit:

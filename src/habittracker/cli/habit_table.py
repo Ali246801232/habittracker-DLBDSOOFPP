@@ -1,17 +1,19 @@
+import math
+import textwrap
+from typing import Callable
+
 from prompt_toolkit.application import Application
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import Layout
-from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.containers import Window
-
-import textwrap
-import math
+from prompt_toolkit.layout.controls import FormattedTextControl
 
 from .. import habits
-from typing import Callable
+
 
 class HabitTable:
     """Paginated table to display habits"""
+
     DATA: dict = {}
     _FILTER: Callable | None = None
     _COLUMNS: dict[str, dict] = {}
@@ -45,14 +47,18 @@ class HabitTable:
 
     def _reload_table(self):
         """Reset table"""
-        self.DATA = habits.HABITS.get_habits(self._FILTER) if self._FILTER else habits.HABITS.get_habits()
+        self.DATA = (
+            habits.HABITS.get_habits(self._FILTER)
+            if self._FILTER
+            else habits.HABITS.get_habits()
+        )
         self.habit_ids = list(self.DATA.keys())
         self.selected_row = 0
         self.page = 0
-        self.on_buttons = not(bool(self.DATA))  # start on buttons if no habits
+        self.on_buttons = not (bool(self.DATA))  # start on buttons if no habits
         self.selected_button = 0
         self._action = None
-        
+
         if self.on_buttons and self._BUTTONS:
             self._action = self._BUTTONS[self.selected_button]
         elif self._ROW_ACTION:
@@ -65,7 +71,13 @@ class HabitTable:
         def _up(event):
             if not self.habit_ids and not self._BUTTONS:
                 return  # nothing to do
-            max_row = min(self._ROWS_PER_PAGE, len(self.habit_ids) - self.page * self._ROWS_PER_PAGE) - 1
+            max_row = (
+                min(
+                    self._ROWS_PER_PAGE,
+                    len(self.habit_ids) - self.page * self._ROWS_PER_PAGE,
+                )
+                - 1
+            )
             if self.on_buttons and self.DATA:
                 self.on_buttons = False
                 self.selected_row = max_row
@@ -81,7 +93,13 @@ class HabitTable:
         def _down(event):
             if not self.habit_ids and not self._BUTTONS:
                 return
-            max_row = min(self._ROWS_PER_PAGE, len(self.habit_ids) - self.page * self._ROWS_PER_PAGE) - 1
+            max_row = (
+                min(
+                    self._ROWS_PER_PAGE,
+                    len(self.habit_ids) - self.page * self._ROWS_PER_PAGE,
+                )
+                - 1
+            )
             if self.on_buttons and self.DATA:
                 self.on_buttons = False
                 self.selected_row = 0
@@ -126,10 +144,6 @@ class HabitTable:
         @self.kb.add("c-q")
         def _force_quit(event):
             self.exit()
-        
-        @self.kb.add("c-q")
-        def _force_quit(event):
-            self.exit()
 
     def _hline(self, left, mid, right, straight):
         """Construct a horizontal table separator"""
@@ -145,10 +159,15 @@ class HabitTable:
         out = "┃"
         for i, h in enumerate(self._COLUMNS.keys()):
             sep = "┃" if i == len(self._COLUMNS.keys()) - 1 else "│"
-            out += " " + cells[h].ljust(self._COLUMNS[h]["width"] - 2*self._PADDING) + " " + sep
+            out += (
+                " "
+                + cells[h].ljust(self._COLUMNS[h]["width"] - 2 * self._PADDING)
+                + " "
+                + sep
+            )
         return out
 
-    def _render(self):        
+    def _render(self):
         """Render the habit table with headers, currently visible rows, and a footer"""
         fragments = []
 
@@ -159,7 +178,10 @@ class HabitTable:
 
         # Header row
         fragments.append(("", "   " + self._hline("┏", "┯", "┓", "━") + "\n"))
-        header_cells = {header: (header.center(self._COLUMNS[header]["width"] - 2*self._PADDING)) for header in self._COLUMNS.keys()}
+        header_cells = {
+            header: (header.center(self._COLUMNS[header]["width"] - 2 * self._PADDING))
+            for header in self._COLUMNS.keys()
+        }
         fragments.append(("", "   " + self._row(header_cells) + "\n"))
         fragments.append(("", "   " + self._hline("┣", "┿", "┫", "━") + "\n"))
 
@@ -168,10 +190,18 @@ class HabitTable:
             habit = self.DATA[uuid]
             wrapped_cells = {
                 name: [
-                    (line.ljust(spec["width"] - 2) if spec["align"] == "left" 
-                    else line.rjust(spec["width"] - 2) if spec["align"] == "right" 
-                    else line.center(spec["width"] - 2))
-                    for line in (textwrap.wrap(spec["value"](habit), spec["width"] - 2) or [""])
+                    (
+                        line.ljust(spec["width"] - 2)
+                        if spec["align"] == "left"
+                        else (
+                            line.rjust(spec["width"] - 2)
+                            if spec["align"] == "right"
+                            else line.center(spec["width"] - 2)
+                        )
+                    )
+                    for line in (
+                        textwrap.wrap(spec["value"](habit), spec["width"] - 2) or [""]
+                    )
                 ]
                 for name, spec in self._COLUMNS.items()
             }
@@ -200,7 +230,9 @@ class HabitTable:
         pieces = []
         for i, label in enumerate(self._BUTTONS):
             if i == 0:
-                pieces.append(">> " if i == self.selected_button and self.on_buttons else "   ")
+                pieces.append(
+                    ">> " if i == self.selected_button and self.on_buttons else "   "
+                )
             pieces.append(f"[{label}]")
             if i < len(self._BUTTONS) - 1:
                 if i == self.selected_button and self.on_buttons:
@@ -210,12 +242,20 @@ class HabitTable:
                 else:
                     pieces.append("    ")
             else:
-                pieces.append(" <<" if i == self.selected_button and self.on_buttons else "   ")
+                pieces.append(
+                    " <<" if i == self.selected_button and self.on_buttons else "   "
+                )
         buttons = "".join(pieces)
 
         # Footer
         total_pages = max(math.ceil(len(self.habit_ids) / self._ROWS_PER_PAGE), 1)
-        total_width = sum(spec["width"] for spec in self._COLUMNS.values()) + len(self._COLUMNS.keys()) + 1 + 3 + 3
+        total_width = (
+            sum(spec["width"] for spec in self._COLUMNS.values())
+            + len(self._COLUMNS.keys())
+            + 1
+            + 3
+            + 3
+        )
         page_count = f"   ← Page {self.page + 1}/{total_pages} → "
         padding = total_width - len(page_count) - len(buttons)
         if padding >= 0:

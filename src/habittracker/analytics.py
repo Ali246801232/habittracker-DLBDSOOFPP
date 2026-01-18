@@ -3,10 +3,12 @@ from . import habits
 SINCE = habits.first_start()
 UNTIL = habits.now()
 
+
 def set_period(since=None, until=None):
     global SINCE, UNTIL
     SINCE = since or habits.first_start()
     UNTIL = until or habits.now()
+
 
 class HabitAnalytics:
     def __init__(self, habit: habits.Habit):
@@ -17,12 +19,16 @@ class HabitAnalytics:
         highest = 0
         current = 0
 
-        periods_sorted = sorted(self.habit._periods, key=lambda period: period["start"])  # oldest to newest
+        periods_sorted = sorted(
+            self.habit._periods, key=lambda period: period["start"]
+        )  # oldest to newest
 
         for period in periods_sorted:
             if period["start"] > UNTIL:  # last relevant period reached
                 break
-            if period["end"] > UNTIL:  # count period containing "until" without breaking streak
+            if (
+                period["end"] > UNTIL
+            ):  # count period containing "until" without breaking streak
                 if self.habit.get_completed(period):
                     current += 1
                     highest = max(highest, current)
@@ -57,7 +63,7 @@ class HabitAnalytics:
             if self.habit.get_completed(period):
                 count += 1
         return count
-    
+
     def completion_rate(self) -> float:
         """Return the completion rate for the habit in the set time frame"""
         total = self.total_periods()
@@ -70,7 +76,7 @@ class HabitAnalytics:
 class GroupAnalytics:
     def __init__(self, habits: list[habits.Habit]):
         self.habits = habits
-    
+
     def highest_streak(self) -> int:
         """Return the highest streak achieved among all habits"""
         highest = 0
@@ -78,7 +84,7 @@ class GroupAnalytics:
             habit_analytics = HabitAnalytics(habit)
             highest = max(highest, habit_analytics.highest_streak())
         return highest
-    
+
     def total_periods(self) -> int:
         """Return the total number of periods among all habits in the set time frame"""
         total = 0
@@ -86,7 +92,7 @@ class GroupAnalytics:
             habit_analytics = HabitAnalytics(habit)
             total += habit_analytics.total_periods()
         return total
-    
+
     def completed_periods(self) -> int:
         """Return the number of completed periods among all habits in the set time frame"""
         completed = 0
@@ -94,7 +100,7 @@ class GroupAnalytics:
             habit_analytics = HabitAnalytics(habit)
             completed += habit_analytics.completed_periods()
         return completed
-    
+
     def average_completion_rate(self) -> float:
         """Return the average completion rate among all habits in the set time frame"""
         if not self.habits:
