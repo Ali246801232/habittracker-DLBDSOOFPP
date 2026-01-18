@@ -2,8 +2,10 @@ import uuid
 import typing
 from datetime import datetime, timedelta, time
 from dateutil.relativedelta import relativedelta
+import json
 
 from . import db_handler
+from .cli.utils import relative_path
 
 class Period(typing.TypedDict):
     start: datetime
@@ -130,6 +132,7 @@ class Habit:
         return self.get_streak()
 
 
+
 class HabitStorage:
     def __init__(self):
         self.habits: dict[str, Habit] = {}
@@ -153,19 +156,6 @@ class HabitStorage:
         self.habits.pop(habit_uuid, None)
 
 HABITS: HabitStorage = HabitStorage()
-
-
-
-def create_default_habits():
-    default_habits = [
-        {"name": "Exercise", "periodicity": {"amount": 2, "unit": "days"}, "notes": "Go for a run or do a workout"},
-        {"name": "Read a book", "periodicity": {"amount": 1, "unit": "weeks"}, "notes": "Finish at least one chapter"},
-        {"name": "Meditate", "periodicity": {"amount": 1, "unit": "days"}, "notes": "For at least 10 minutes"},
-        {"name": "Write journal", "periodicity": {"amount": 1, "unit": "days"}, "notes": "Reflect on the day's events"},
-        {"name": "Practice coding", "periodicity": {"amount": 1, "unit": "days"}, "notes": "Solve at least one coding problem"},
-    ]
-    for attributes in default_habits:
-        HABITS.create_habit(attributes)
 
 
 
@@ -229,12 +219,32 @@ def save_habits():
     db_handler.save_all(data)
 
 
+
 def now():
     return datetime.now()
-
 
 def first_start():
     """Return the start date of the earliest habit"""
     if not HABITS.get_habits():
         return now()
     return min(habit.start_date for habit in HABITS.get_habits().values())
+
+
+
+def seed_sample_data(file_path: str = "sample_data.json"):
+    file_path = relative_path(__file__, file_path)
+    with open(file_path, "r") as f:
+        default_habits = json.load(f)
+
+    base = now() - timedelta(weeks=4)
+
+    for attributes in default_habits:
+        HABITS.create_habit(attributes)
+        habit = next(h for h in HABITS.get_habits().values() if h.name == attributes["name"])
+        habit.start_date = base
+        habit._periods = []
+        while habit._periods == [] or habit._periods[-1]["end"] < base + timedelta(days=28):
+            habit._periods.append(habit._next_period())
+
+        for day_offset in attributes.get("completions", []):
+            habit._completions.append(habit.start_date + timedelta(days=day_offset, hours=10))  # or set per habit

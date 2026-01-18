@@ -215,7 +215,7 @@ class HabitTable:
 
         # Footer
         total_pages = max(math.ceil(len(self.habit_ids) / self._ROWS_PER_PAGE), 1)
-        total_width = sum(spec["width"] for spec in self._COLUMNS.values()) + 2*len(self._COLUMNS.keys()) + 3
+        total_width = sum(spec["width"] for spec in self._COLUMNS.values()) + len(self._COLUMNS.keys()) + 1 + 3 + 3
         page_count = f"   ← Page {self.page + 1}/{total_pages} → "
         padding = total_width - len(page_count) - len(buttons)
         if padding >= 0:

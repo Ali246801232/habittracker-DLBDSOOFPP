@@ -80,10 +80,18 @@ def test_completion_expires(monkeypatch):
 def test_default_habits_creation():
     """Test creation of default habits."""
     habits.HABITS.habits.clear()
-    habits.create_default_habits()
+    habits.seed_sample_data()
+
     assert len(habits.HABITS.habits) == 5
-    names = [habit.name for habit in habits.HABITS.habits.values()]
-    assert "Exercise" in names
-    assert "Read a book" in names
-    assert "Meditate" in names
-    assert "Write journal" in names
+
+    habit_by_name = {h.name: h for h in habits.HABITS.habits.values()}
+    expected_streaks = {
+        "Exercise": 1,
+        "Read a book": 0,
+        "Meditate": 3,
+        "Write journal": 1,
+        "Practice coding": 11,
+    }
+    for name, expected_streak in expected_streaks.items():
+        assert name in habit_by_name, f"Missing habit: {name}"
+        assert habit_by_name[name].streak == expected_streak

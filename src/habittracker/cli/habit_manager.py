@@ -1,7 +1,7 @@
 from prompt_toolkit import prompt, HTML, print_formatted_text as print
 
 from .. import habits
-from .cli_utils import radio_list, clear_screen
+from .utils import radio_list, clear_screen
 from .habit_table import HabitTable
 
 class HabitManager(HabitTable):

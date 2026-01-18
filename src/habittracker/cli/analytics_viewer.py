@@ -4,7 +4,7 @@ from datetime import datetime, time, timedelta
 from .. import habits
 from .. import analytics
 from .habit_table import HabitTable
-from .cli_utils import radio_list, clear_screen, calendar_picker
+from .utils import radio_list, clear_screen, calendar_picker
 
 class AnalyticsViewer(HabitTable):
     """Paginated table to view habit anallytics"""

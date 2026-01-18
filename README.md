@@ -1,8 +1,36 @@
 # HabitTracker
 
-A Python-based CLI habit tracking app to create, track, and analyze habits over time. 
+A Python-based CLI habit tracking app to create, track, and analyze habits.
 
-## Quick Start
+## Key Features
+
+- **Command-line interface (CLI)**
+  Interactive, keyboard-driven terminal UI with menus and tables for managing habits and analytics.
+
+- **Habit management**
+  - Create, edit, and delete habits.
+  - Each habit has a name, optional notes, and a configurable periodicity.
+  - Habits can be marked complete or incomplete within their current period.
+  - A habit must be completed at least once within each period to maintain a streak.
+
+- **Analytics module**
+  - View analytics per habit or across groups of habits.
+  - Metrics include:
+    - Current streak
+    - Highest (longest) streak
+    - Completion rate over a selected time range
+
+- **Persistent storage**
+  - Habit data is stored in a local SQLite database.
+  - Persists habits, periods, and completion timestamps between runs.
+  - Automatically initializes the database schema on first launch.
+
+- **Default data**
+  - On first run, the app creates 5 predefined habits with 4 weeks of sample data.
+  - These defaults provide example tracking data suitable for testing and evaluation, as required by the course assignment.
+  - New habits can be created interactively via the CLI.
+
+## Installation
 
 1. Install Python 3.9+ from [the official website](https://www.python.org/downloads/).
 
@@ -64,6 +92,8 @@ Then, to interact with the table, you can:
 - Press ENTER with a habit selected to mark it complete/incomplete, modify it, or delete it.
 - Return to the main menu by pressing the `Quit` button.
 
+A habit, once completed, remains completed until the period ends or unless marked incomplete.
+
 ---
 
 Selecting `Analytics` will open a table interface, similar to the following:
@@ -87,10 +117,19 @@ Then, to interact with the table, you can:
 - Filter habits by pressing `Filter Habits` (by periodicity or dates).
 - Return to the main menu by pressing `Quit`.
 
----
+## Testing
 
-Selecting `Help` will display a summarized version of instructions.
+Core logic is designed to be testable independently of the CLI.
+14 existing unit tests have been made using `pytest` can be run as follows:
+1. Install dev requirements:
+    ```ps
+    pip install -e .[dev]
+    ```
+2. Run tests:
+    ```ps
+    pytest tests
+    ```
 
-Selecting `Quit` will exit the app.
+## License
 
-## Example Workflow
+This project is licensed under the MIT license. See [LICENSE](LICENSE) for details

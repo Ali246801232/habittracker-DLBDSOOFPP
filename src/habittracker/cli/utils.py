@@ -12,7 +12,9 @@ def clear_screen():
     """Clear the terminal screen."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
-
+def relative_path(file, file_path):
+    """Return a relative path joined """
+    return os.path.join(os.path.dirname(file), file_path)
 
 def radio_list(options: list, default=None):
     """Display an inline radio list with the given options and return the selected option"""

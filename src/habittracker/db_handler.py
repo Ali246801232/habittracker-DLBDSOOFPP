@@ -1,8 +1,9 @@
 import sqlite3
-import os
 from pathlib import Path
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "habits.db")
+from .cli.utils import relative_path
+
+DB_PATH = relative_path(__file__, "habits.db")
 
 def _get_conn():
     """Get a connection to the database"""

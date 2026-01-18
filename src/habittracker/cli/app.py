@@ -2,7 +2,7 @@ from prompt_toolkit import print_formatted_text as print, HTML
 import requests
 import os
 
-from .cli_utils import clear_screen, radio_list
+from .utils import clear_screen, radio_list, relative_path
 from .habit_manager import HabitManager
 from .analytics_viewer import AnalyticsViewer
 
@@ -51,7 +51,7 @@ class HabitTrackerApp:
     def _help(self):
         """Display help information"""
         try:
-            help_path = os.path.join(os.path.dirname(__file__), "help.txt")
+            help_path = relative_path(__file__, "help.txt")
             with open(help_path, "r") as f:
                 print(HTML(f.read()))
         except FileNotFoundError:
