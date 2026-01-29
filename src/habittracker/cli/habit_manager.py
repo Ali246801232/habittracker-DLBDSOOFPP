@@ -178,6 +178,7 @@ class HabitEditor:
             )
 
             # Confirm details and return
+            clear_screen()
             print(HTML(f"<b>Habit</b>: {name}"))
             print(HTML(f"<b>Notes</b>: {notes}"))
             print(
@@ -185,7 +186,7 @@ class HabitEditor:
                     f"<b>Periodicity</b>: Every {periodicity_amount} {periodicity_unit}"
                 )
             )
-            print("Are these details correct?")
+            print("\nAre these details correct?")
             if radio_list(["Yes", "No"]) == "Yes":
                 return {
                     "name": name,

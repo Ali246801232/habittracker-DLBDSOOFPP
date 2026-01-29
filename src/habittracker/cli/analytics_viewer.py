@@ -60,6 +60,7 @@ class AnalyticsViewer(HabitTable):
         analytics.set_period()
 
     def _action_none(self):
+        clear_screen()
         return False
 
     def _action_overall_analytics(self):
@@ -75,7 +76,7 @@ class AnalyticsViewer(HabitTable):
             )
         )
         print()
-        input("\nPress Enter to return to the table.")
+        input("Press Enter to return to the table.")
         clear_screen()
         return False
 
@@ -83,6 +84,8 @@ class AnalyticsViewer(HabitTable):
         clear_screen()
         print("Filter by:")
         choice = radio_list(["Periodicity", "Date", "Remove Filters", "Back"])
+
+        clear_screen()
 
         match choice:
             case "Periodicity":
@@ -114,6 +117,7 @@ class AnalyticsViewer(HabitTable):
                     ),
                     time.min,
                 )
+                print("")
                 print(HTML("<b>End date:</b>"))
                 analytics.UNTIL = datetime.combine(
                     calendar_picker(
