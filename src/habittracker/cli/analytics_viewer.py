@@ -76,7 +76,7 @@ class AnalyticsViewer(HabitTable):
             )
         )
         print()
-        input("Press Enter to return to the table.")
+        input("Press ENTER to return to the table.")
         clear_screen()
         return False
 

@@ -5,9 +5,14 @@ from .habits import load_habits, seed_sample_data
 
 def main():
     set_db_path()
+
+    first_run = is_first_run()
+
     initialize_database()
     load_habits()
-    if is_first_run():
+
+    if first_run:
         seed_sample_data()
+
     cli_app = HabitTrackerApp()
     cli_app.run()

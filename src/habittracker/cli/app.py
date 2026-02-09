@@ -53,5 +53,5 @@ class HabitTrackerApp:
                 print(HTML(f.read()))
         except FileNotFoundError:
             print("Help file not found.")
-        input("\nPress Enter to return to the menu.")
+        input("\nPress ENTER to return to the menu.")
         clear_screen()
