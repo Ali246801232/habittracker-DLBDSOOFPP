@@ -59,6 +59,7 @@ A Python-based CLI habit tracking app to create, track, and analyze habits.
 ## Usage
 
 Upon launching the app, you will see the main menu:
+
 ![Main Menu](images/main_menu.png)
 
 ---
