@@ -59,15 +59,7 @@ A Python-based CLI habit tracking app to create, track, and analyze habits.
 ## Usage
 
 Upon launching the app, you will see the main menu:
-```
-Welcome to Habit Tracker v0.0.1!
-
-Please select an option:
-● Habits
-○ Analytics
-○ Help
-○ Quit
-```
+![Main Menu](images/main_menu.png)
 
 ---
 
