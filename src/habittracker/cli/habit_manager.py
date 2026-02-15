@@ -15,10 +15,10 @@ class HabitManager(HabitTable):
         self._ACTIONS = {
             "Edit Habit": self._action_edit_habit,
             "New Habit": self._action_new_habit,
-            "Quit": self._action_quit,
+            "Back": self._action_quit,
         }
         self._ROW_ACTION = "Edit Habit"
-        self._BUTTONS = ["New Habit", "Quit"]
+        self._BUTTONS = ["New Habit", "Back"]
         self._FILTER = None
         self._COLUMNS = {
             "Habit": {

@@ -18,9 +18,9 @@ class AnalyticsViewer(HabitTable):
             "None": self._action_none,
             "Overall Analytics": self._action_overall_analytics,
             "Filter Habits": self._action_filter_habits,
-            "Quit": self._action_quit,
+            "Back": self._action_quit,
         }
-        self._BUTTONS = ["Overall Analytics", "Filter Habits", "Quit"]
+        self._BUTTONS = ["Overall Analytics", "Filter Habits", "Back"]
         self._ROW_ACTION = "None"
         self._FILTER = None
         self._COLUMNS = {

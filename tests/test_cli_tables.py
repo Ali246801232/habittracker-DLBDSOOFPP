@@ -1,3 +1,5 @@
+"""Test rendering of HabitManager and AnalyticsViewer tables"""
+
 import pytest
 from unittest.mock import MagicMock
 
@@ -68,7 +70,7 @@ def test_display_habit_manager(app_with_sample_habits):
     # Footer
     assert "← Page 1/2 →" in full_output
     assert "[New Habit]" in full_output
-    assert "[Quit]" in full_output
+    assert "[Back]" in full_output
 
 def test_display_analytics_viewer(app_with_sample_habits):
     """Test rendering of AnalyticsViewer table with sample habits."""
@@ -103,4 +105,4 @@ def test_display_analytics_viewer(app_with_sample_habits):
     assert "← Page 1/2 →" in full_output
     assert "[Overall Analytics]" in full_output
     assert "[Filter Habits]" in full_output
-    assert "[Quit]" in full_output
+    assert "[Back]" in full_output

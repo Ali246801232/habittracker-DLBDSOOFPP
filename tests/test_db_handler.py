@@ -1,3 +1,5 @@
+"""Test database and database handler functions"""
+
 import pytest
 import sqlite3
 import tempfile
@@ -57,3 +59,48 @@ def test_save_and_load_all():
     assert loaded["uuid-1"]["habit"]["name"] == "Test Habit"
     assert len(loaded["uuid-1"]["periods"]) == 1
     assert len(loaded["uuid-1"]["completions"]) == 1
+
+def test_save_and_retrieve_multiple_habits():
+    """Test saving and retrieving multiple habits from database."""
+    db_handler.initialize_database()
+
+    data = {
+        "uuid-1": {
+            "habit": {
+                "name": "Habit One",
+                "periodicity_amount": 1,
+                "periodicity_unit": "days",
+                "notes": "First habit",
+                "start_date": "2023-01-01T00:00:00",
+            },
+            "periods": [
+                {"start": "2023-01-01T00:00:00", "end": "2023-01-02T00:00:00"}
+            ],
+            "completions": ["2023-01-01T12:00:00"]
+        },
+        "uuid-2": {
+            "habit": {
+                "name": "Habit Two",
+                "periodicity_amount": 7,
+                "periodicity_unit": "days",
+                "notes": "Second habit",
+                "start_date": "2023-01-01T00:00:00",
+            },
+            "periods": [
+                {"start": "2023-01-01T00:00:00", "end": "2023-01-08T00:00:00"}
+            ],
+            "completions": []
+        }
+    }
+
+    db_handler.save_all(data)
+    loaded = db_handler.load_all()
+
+    assert len(loaded) == 2
+    assert loaded["uuid-1"]["habit"]["name"] == "Habit One"
+    assert loaded["uuid-2"]["habit"]["name"] == "Habit Two"
+    assert len(loaded["uuid-1"]["completions"]) == 1
+    assert len(loaded["uuid-2"]["completions"]) == 0
+    assert loaded["uuid-1"]["habit"]["periodicity_amount"] == 1
+    assert loaded["uuid-2"]["habit"]["periodicity_amount"] == 7
+    assert len(loaded["uuid-2"]["completions"]) == 0
