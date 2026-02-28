@@ -79,7 +79,8 @@ class HabitEditor:
     def _create_habit(self):
         """Create a new habit"""
         attributes = self._input_habit_details()
-        habits.HABITS.create_habit(attributes)
+        if attributes is not None:
+            habits.HABITS.create_habit(attributes)
         habits.save_habits()
 
     def _edit_habit(self):
@@ -107,7 +108,8 @@ class HabitEditor:
 
                 case "Edit habit":
                     attributes = self._input_habit_details()
-                    self.habit.update(attributes)
+                    if attributes is not None:
+                        self.habit.update(attributes)
                     habits.save_habits()
 
                 case "Delete habit":
@@ -187,7 +189,8 @@ class HabitEditor:
                 )
             )
             print("\nAre these details correct?")
-            if radio_list(["Yes", "No"]) == "Yes":
+            confirm = radio_list(["Yes", "No", "Cancel"])
+            if confirm == "Yes":
                 return {
                     "name": name,
                     "periodicity": {
@@ -196,6 +199,8 @@ class HabitEditor:
                     },
                     "notes": notes,
                 }
-            else:
+            elif confirm == "No":
                 if self.habit:
                     return defaults
+            elif confirm == "Cancel":
+                return None

@@ -103,6 +103,21 @@ Currently, the following tests exist and pass:
 
 ![Passed Tests](images/passed_tests.png)
 
+For interactive experimentation (time travel, resetting the database, etc.) a manual testing harness is provided. It uses its own temporary database and restores to a blank state when you exit.
+
+```ps
+habittracker --manual-test
+# or
+habittracker -m
+```
+
+The harness presents a small menu that lets you:
+
+1. **Run App** - start the normal habit tracker CLI using the temporary DB.
+2. **Change Date** - pick a new "current" date.
+3. **Reset Database** - wipe and recreate the temp file.
+4. **Exit** -  leave the harness (the temp DB is deleted automatically).
+
 ## License
 
 This project is licensed under the MIT license. See [LICENSE](LICENSE) for details
