@@ -114,7 +114,7 @@ habittracker -m
 The harness presents a small menu that lets you:
 
 1. **Run App** - start the normal habit tracker CLI using the temporary database.
-2. **Change Date** - pick a new "current" date.
+2. **Change Date** - pick a new "current" date (going to the past may cause unusual behaviour).
 3. **Reset Database** - wipe and recreate the temporary database.
 4. **Exit** -  leave the harness (the temporary database is deleted automatically).
 
