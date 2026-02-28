@@ -9,7 +9,6 @@ def set_period(since=None, until=None):
     SINCE = since or habits.first_start()
     UNTIL = until or habits.now()
 
-
 class HabitAnalytics:
     def __init__(self, habit: habits.Habit):
         self.habit = habit
@@ -18,26 +17,24 @@ class HabitAnalytics:
         """Return the highest streak achieved up for the habit"""
         highest = 0
         current = 0
+        streak_valid = False
 
-        periods_sorted = sorted(
-            self.habit.periods, key=lambda period: period["start"]
-        )  # oldest to newest
-
-        for period in periods_sorted:
+        for period in sorted(self.habit.periods, key=lambda period: period["start"]):  # oldest to newest
             if period["start"] > UNTIL:  # last relevant period reached
                 break
-            if (
-                period["end"] > UNTIL
-            ):  # count period containing "until" without breaking streak
-                if self.habit.get_completed(period):
-                    current += 1
+
+            completed = self.habit.get_completed(period)
+
+            if completed:
+                current += 1
+                if period["end"] > SINCE:  # exclude streaks ending before "since"
+                    streak_valid = True
+                if streak_valid:
                     highest = max(highest, current)
-                continue
-            if not self.habit.get_completed(period):  # streak broken
+
+            elif period["end"] <= UNTIL:  # only reset if fully before UNTIL
                 current = 0
-                continue
-            current += 1
-            highest = max(highest, current)
+                streak_valid = False
 
         return highest
 

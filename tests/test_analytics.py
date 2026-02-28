@@ -17,8 +17,14 @@ def sample_habit():
     habit.completions = [datetime(2023, 1, 1, 12, 0), datetime(2023, 1, 2, 12, 0)] 
     return habit
 
+@pytest.fixture(autouse=True)
+def reset_analytics():
+    analytics.SINCE = datetime.min
+    analytics.UNTIL = datetime.max
+
 def test_habit_analytics_highest_streak(sample_habit):
     """Test highest streak calculation."""
+    analytics.set_period(datetime(2023, 1, 1), datetime(2023, 1, 4))
     analytics_obj = analytics.HabitAnalytics(sample_habit)
     assert analytics_obj.highest_streak() == 2
 
@@ -28,6 +34,39 @@ def test_habit_analytics_completion_rate(sample_habit):
     analytics_obj = analytics.HabitAnalytics(sample_habit)
     rate = analytics_obj.completion_rate()
     assert rate == 2 / 3  # 2 completions in 3 periods
+
+
+def test_highest_streak_exclude_before_since():
+    """Streaks ended entirely before SINCE are ignored."""
+    habit = habits.Habit("test-uuid", "Old Streak")
+    habit.periods = [
+        {"start": datetime(2023, 1, 1), "end": datetime(2023, 1, 2)},
+        {"start": datetime(2023, 1, 2), "end": datetime(2023, 1, 3)},
+    ]
+    habit.completions = [
+        datetime(2023, 1, 1, 12, 0),
+        datetime(2023, 1, 2, 12, 0),
+    ]
+    analytics.set_period(datetime(2023, 1, 4), datetime(2023, 1, 5))
+    assert analytics.HabitAnalytics(habit).highest_streak() == 0
+
+
+def test_highest_streak_partial_cross_since():
+    """If a streak crosses into the window it should count the entire length."""
+    habit = habits.Habit("test-uuid", "Crossing Streak")
+    habit.periods = [
+        {"start": datetime(2023, 1, 1), "end": datetime(2023, 1, 2)},
+        {"start": datetime(2023, 1, 2), "end": datetime(2023, 1, 3)},
+        {"start": datetime(2023, 1, 3), "end": datetime(2023, 1, 4)},
+    ]
+    habit.completions = [
+        datetime(2023, 1, 1, 12, 0),
+        datetime(2023, 1, 2, 12, 0),
+        datetime(2023, 1, 3, 12, 0),
+    ]
+    # window begins halfway through the last period
+    analytics.set_period(datetime(2023, 1, 3, 12), datetime(2023, 1, 5))
+    assert analytics.HabitAnalytics(habit).highest_streak() == 3
 
 def test_group_analytics(sample_habit):
     """Test group analytics with multiple habits."""
