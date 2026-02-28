@@ -35,24 +35,24 @@ A Python-based CLI habit tracking app to create, track, and analyze habits.
 1. Install Python 3.9+ from [the official website](https://www.python.org/downloads/).
 
 2. Clone the repository:
-    ```ps
+    ```powershell
     git clone "https://github.com/Ali246801232/habittracker-DLBDSOOFPP.git" habittracker
     cd habittracker
     ```
 
 3. Set up a virtual environment (optional but recommended):
-    ```ps
+    ```powershell
     python -m venv venv
     .\venv\Scripts\activate
     ```
 
 4. Install the app as a package:
-    ```ps
+    ```powershell
     pip install .
     ```
 
 5. Run HabitTracker:
-    ```ps
+    ```powershell
     habittracker
     ```
 
@@ -91,11 +91,11 @@ Then, to interact with the table, you can:
 Core logic is designed to be testable independently of the CLI.
 A number of existing unit tests have been made using `pytest`, and can be run as follows:
 1. Install dev requirements:
-    ```ps
+    ```powershell
     pip install -e .[dev]
     ```
 2. Run tests:
-    ```ps
+    ```powershell
     pytest tests
     ```
 
@@ -105,7 +105,7 @@ Currently, the following tests exist and pass:
 
 For interactive experimentation (time travel, resetting the database, etc.) a manual testing harness is provided. It uses its own temporary database and restores to a blank state when you exit.
 
-```ps
+```powershell
 habittracker --manual-test
 # or
 habittracker -m
