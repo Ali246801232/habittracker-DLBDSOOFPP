@@ -9,12 +9,12 @@ from src.habittracker import habits, analytics
 def sample_habit():
     """Create a sample habit for testing."""
     habit = habits.Habit("test-uuid", "Test Habit")
-    habit._periods = [
+    habit.periods = [
         {"start": datetime(2023, 1, 1), "end": datetime(2023, 1, 2)},
         {"start": datetime(2023, 1, 2), "end": datetime(2023, 1, 3)},
         {"start": datetime(2023, 1, 3), "end": datetime(2023, 1, 4)},
     ]
-    habit._completions = [datetime(2023, 1, 1, 12, 0), datetime(2023, 1, 2, 12, 0)] 
+    habit.completions = [datetime(2023, 1, 1, 12, 0), datetime(2023, 1, 2, 12, 0)] 
     return habit
 
 def test_habit_analytics_highest_streak(sample_habit):
@@ -33,8 +33,8 @@ def test_group_analytics(sample_habit):
     """Test group analytics with multiple habits."""
     analytics.set_period(datetime(2023, 1, 1), datetime(2023, 1, 4))
     habit2 = habits.Habit("test-uuid2", "Test Habit 2")
-    habit2._periods = sample_habit._periods
-    habit2._completions = [datetime(2023, 1, 1, 12, 0)]
+    habit2.periods = sample_habit.periods
+    habit2.completions = [datetime(2023, 1, 1, 12, 0)] 
 
     group = analytics.GroupAnalytics([sample_habit, habit2])
     assert group.highest_streak() == 2  # highest streak (2 from sample_habit)
@@ -46,10 +46,10 @@ def test_group_analytics(sample_habit):
 def test_analytics_no_completions():
     """Test analytics with a habit that has no completions"""
     habit = habits.Habit("test-uuid", "Never Done")
-    habit._periods = [
+    habit.periods = [
         {"start": datetime(2023, 1, 1), "end": datetime(2023, 1, 2)},
     ]
-    habit._completions = []
+    habit.completions = []
     analytics.set_period(datetime(2023, 1, 1), datetime(2023, 1, 2))
     analytics_obj = analytics.HabitAnalytics(habit)
     
@@ -59,11 +59,11 @@ def test_analytics_no_completions():
 def test_analytics_all_periods_completed():
     """Test analytics with all periods completed"""
     habit = habits.Habit("test-uuid", "Always Done", periodicity={"amount": 1, "unit": "days"})
-    habit._periods = [
+    habit.periods = [
         {"start": datetime(2023, 1, 1), "end": datetime(2023, 1, 2)},
         {"start": datetime(2023, 1, 2), "end": datetime(2023, 1, 3)},
     ]
-    habit._completions = [
+    habit.completions = [
         datetime(2023, 1, 1, 12, 0),
         datetime(2023, 1, 2, 12, 0),
     ]

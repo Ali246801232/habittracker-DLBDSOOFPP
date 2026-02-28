@@ -20,7 +20,7 @@ class HabitAnalytics:
         current = 0
 
         periods_sorted = sorted(
-            self.habit._periods, key=lambda period: period["start"]
+            self.habit.periods, key=lambda period: period["start"]
         )  # oldest to newest
 
         for period in periods_sorted:
@@ -44,7 +44,7 @@ class HabitAnalytics:
     def total_periods(self) -> int:
         """Return the total number of periods for the habit in the set time frame"""
         count = 0
-        for period in self.habit._periods:
+        for period in self.habit.periods:
             if period["end"] < SINCE:
                 continue
             if period["start"] > UNTIL:
@@ -55,7 +55,7 @@ class HabitAnalytics:
     def completed_periods(self) -> int:
         """Return the number of completed periods for the habit in the set time frame"""
         count = 0
-        for period in self.habit._periods:
+        for period in self.habit.periods:
             if period["end"] < SINCE:
                 continue
             if period["start"] > UNTIL:

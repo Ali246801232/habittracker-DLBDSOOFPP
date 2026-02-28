@@ -26,7 +26,7 @@ def _get_conn():
 
 
 def initialize_database():
-    """Initialize databse with habits, completions, and periods table"""
+    """Initialize database with habits, completions, and periods table"""
     try:
         with _get_conn() as conn:
             conn.executescript(

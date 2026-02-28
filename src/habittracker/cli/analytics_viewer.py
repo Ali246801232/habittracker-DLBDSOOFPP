@@ -10,7 +10,7 @@ from .utils import calendar_picker, clear_screen, radio_list
 
 
 class AnalyticsViewer(HabitTable):
-    """Paginated table to view habit anallytics"""
+    """Paginated table to view habit analytics"""
 
     def __init__(self):
         super().__init__()

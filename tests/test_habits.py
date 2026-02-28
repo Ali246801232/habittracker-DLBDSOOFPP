@@ -31,18 +31,18 @@ def test_toggle_completed_adds_completion(monkeypatch):
     assert not habit.completed
     habit.toggle_completed()
     assert habit.completed
-    assert len(habit._completions) == 1
-    assert habit._completions[0] == fixed_now
+    assert len(habit.completions) == 1
+    assert habit.completions[0] == fixed_now
 
 def test_toggle_completed_removes_if_already_completed():
     """Test that toggle_completed removes completion if already completed."""
     habit = habits.Habit("test-uuid", "Test Habit")
     current_period = habit.get_period()
     completion_time = current_period["start"] + (current_period["end"] - current_period["start"]) / 2
-    habit._completions.append(completion_time)
+    habit.completions.append(completion_time)
     assert habit.completed
     habit.toggle_completed()
-    assert len(habit._completions) == 0
+    assert len(habit.completions) == 0
 
 def test_get_streak(monkeypatch):
     """Test streak calculation."""
@@ -50,8 +50,8 @@ def test_get_streak(monkeypatch):
     monkeypatch.setattr(habits, 'now', lambda: fixed_now)
 
     habit = habits.Habit("test-uuid", "Test Habit")
-    habit._completions = [datetime(2023, 1, 1, 12, 0), datetime(2023, 1, 2, 12, 0)]
-    habit._periods = [
+    habit.completions = [datetime(2023, 1, 1, 12, 0), datetime(2023, 1, 2, 12, 0)]
+    habit.periods = [
         {"start": datetime(2023, 1, 1), "end": datetime(2023, 1, 2)},
         {"start": datetime(2023, 1, 2), "end": datetime(2023, 1, 3)},
         {"start": datetime(2023, 1, 3), "end": datetime(2023, 1, 4)},

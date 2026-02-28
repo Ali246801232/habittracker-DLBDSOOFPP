@@ -153,30 +153,30 @@ class HabitTable:
         def _force_quit(event):
             self.exit()
 
-    def _hline(self, left, mid, right, straight):
-        """Construct a horizontal table separator"""
-        parts = []
-        for i, h in enumerate(self._COLUMNS.keys()):
-            parts.append(straight * self._COLUMNS[h]["width"])
-            if i < len(self._COLUMNS.keys()) - 1:
-                parts.append(mid)
-        return left + "".join(parts) + right
-
-    def _row(self, cells):
-        """Construct a table row"""
-        out = "┃"
-        for i, h in enumerate(self._COLUMNS.keys()):
-            sep = "┃" if i == len(self._COLUMNS.keys()) - 1 else "│"
-            out += (
-                " "
-                + cells[h].ljust(self._COLUMNS[h]["width"] - 2 * self._PADDING)
-                + " "
-                + sep
-            )
-        return out
-
     def _render(self):
         """Render the habit table with headers, currently visible rows, and a footer"""
+        def hline(left, mid, right, straight):
+            """Construct a horizontal table separator using enclosing ``self``."""
+            parts = []
+            for i, h in enumerate(self._COLUMNS.keys()):
+                parts.append(straight * self._COLUMNS[h]["width"])
+                if i < len(self._COLUMNS.keys()) - 1:
+                    parts.append(mid)
+            return left + "".join(parts) + right
+
+        def row(cells):
+            """Construct a table row using enclosing ``self`` context."""
+            out = "┃"
+            for i, h in enumerate(self._COLUMNS.keys()):
+                sep = "┃" if i == len(self._COLUMNS.keys()) - 1 else "│"
+                out += (
+                    " "
+                    + cells[h].ljust(self._COLUMNS[h]["width"] - 2 * self._PADDING)
+                    + " "
+                    + sep
+                )
+            return out
+
         fragments = []
 
         # Pagination
@@ -185,13 +185,13 @@ class HabitTable:
         visible = self.habit_ids[start:end]
 
         # Header row
-        fragments.append(("", "   " + self._hline("┏", "┯", "┓", "━") + "\n"))
+        fragments.append(("", "   " + hline("┏", "┯", "┓", "━") + "\n"))
         header_cells = {
             header: (header.center(self._COLUMNS[header]["width"] - 2 * self._PADDING))
             for header in self._COLUMNS.keys()
         }
-        fragments.append(("", "   " + self._row(header_cells) + "\n"))
-        fragments.append(("", "   " + self._hline("┣", "┿", "┫", "━") + "\n"))
+        fragments.append(("", "   " + row(header_cells) + "\n"))
+        fragments.append(("", "   " + hline("┣", "┿", "┫", "━") + "\n"))
 
         # Habit rows
         for idx, uuid in enumerate(visible):
@@ -227,12 +227,12 @@ class HabitTable:
                 else:
                     prefix = "   "
                     suffix = ""
-                fragments.append(("", prefix + self._row(cells) + suffix + "\n"))
+                fragments.append(("", prefix + row(cells) + suffix + "\n"))
 
             if idx < len(visible) - 1:
-                fragments.append(("", "   " + self._hline("┠", "┼", "┨", "─") + "\n"))
+                fragments.append(("", "   " + hline("┠", "┼", "┨", "─") + "\n"))
 
-        fragments.append(("", "   " + self._hline("┗", "┷", "┛", "━") + "\n"))
+        fragments.append(("", "   " + hline("┗", "┷", "┛", "━") + "\n"))
 
         # Buttons
         pieces = []

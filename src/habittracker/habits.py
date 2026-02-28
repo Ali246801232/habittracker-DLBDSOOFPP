@@ -41,8 +41,8 @@ class Habit:
         completed (bool): whether the habit was completed in this period
         streak (int): number of consecutive periods the habit was completed up to now
 
-        _periods (list[Period]): historical periods based on periodicity (persisted)
-        _completions (list[datetime]): completion timestamps (persisted)
+        periods (list[Period]): historical periods based on periodicity (persisted)
+        completions (list[datetime]): completion timestamps (persisted)
     """
 
     def __init__(
@@ -62,10 +62,10 @@ class Habit:
             now().date(), time.min
         )  # today at 12 am
 
-        self._periods: list[Period] = []
-        self._periods.append(self._next_period())
+        self.periods: list[Period] = []
+        self.periods.append(self._next_period())
 
-        self._completions: list[datetime] = []
+        self.completions: list[datetime] = []
 
     def update(self, attributes: dict):
         """Update the habit's details"""
@@ -76,12 +76,12 @@ class Habit:
     def toggle_completed(self):
         """Mark the habit complete/incomplete for the current period"""
         if not self.completed:
-            self._completions.append(now())  # add completion
+            self.completions.append(now())  # add completion
         else:
             period = self.get_period()
-            self._completions = [
+            self.completions = [
                 completion
-                for completion in self._completions
+                for completion in self.completions
                 if not (period["start"] <= completion < period["end"])
             ]  # remove completions in current period
 
@@ -91,7 +91,7 @@ class Habit:
             period = self.get_period()
         return any(
             period["start"] <= completion < period["end"]
-            for completion in self._completions
+            for completion in self.completions
         )  # any completion in this period
 
     def get_streak(self, until: datetime = None) -> int:
@@ -99,7 +99,7 @@ class Habit:
         if until is None:
             until = now()
         periods_sorted = sorted(
-            self._periods, key=lambda period: period["start"], reverse=True
+            self.periods, key=lambda period: period["start"], reverse=True
         )  # newest to oldest
         streak = 0
         for period in periods_sorted:
@@ -120,9 +120,9 @@ class Habit:
         """Return the period that contains the given datetime"""
         if at is None:
             at = now()
-        while self._periods and self._periods[-1]["end"] <= at:
-            self._periods.append(self._next_period())
-        for period in self._periods:
+        while self.periods and self.periods[-1]["end"] <= at:
+            self.periods.append(self._next_period())
+        for period in self.periods:
             if period["start"] <= at < period["end"]:
                 return period
         raise RuntimeError("No period covers the given datetime")
@@ -135,8 +135,8 @@ class Habit:
 
     def _next_period(self) -> Period:
         """Return the next period based on the last period and periodicity"""
-        if self._periods:
-            start = self._periods[-1]["end"]
+        if self.periods:
+            start = self.periods[-1]["end"]
         else:
             start = self.start_date
         end = start + self._periodicity_delta()
@@ -206,14 +206,14 @@ def load_habits():
 
         habit_obj = HABITS.get_habit(habit_uuid)
         habit_obj.start_date = datetime.fromisoformat(habit["start_date"])
-        habit_obj._periods = [
+        habit_obj.periods = [
             {
                 "start": datetime.fromisoformat(period["start"]),
                 "end": datetime.fromisoformat(period["end"]),
             }
             for period in data["periods"]
         ]
-        habit_obj._completions = [
+        habit_obj.completions = [
             datetime.fromisoformat(completion) for completion in data["completions"]
         ]
 
@@ -236,10 +236,10 @@ def save_habits():
                     "start": period["start"].isoformat(),
                     "end": period["end"].isoformat(),
                 }
-                for period in habit._periods
+                for period in habit.periods
             ],
             "completions": [
-                completion.isoformat() for completion in habit._completions
+                completion.isoformat() for completion in habit.completions
             ],
         }
 
@@ -270,13 +270,11 @@ def seed_sample_data(file_path: str = "sample_data.json"):
             h for h in HABITS.get_habits().values() if h.name == attributes["name"]
         )
         habit.start_date = base
-        habit._periods = []
-        while habit._periods == [] or habit._periods[-1]["end"] < base + timedelta(
-            days=28
-        ):
-            habit._periods.append(habit._next_period())
+        habit.periods = []
+        while habit.periods == [] or habit.periods[-1]["end"] < base + timedelta(days=28):
+            habit.periods.append(habit._next_period())
 
         for day_offset in attributes.get("completions", []):
-            habit._completions.append(
+            habit.completions.append(
                 habit.start_date + timedelta(days=day_offset, hours=10)
-            )  # or set per habit
+            )
