@@ -26,6 +26,7 @@ class HabitTable:
 
     def __init__(self):
         # App setup
+        self.page = 0
         self.kb = KeyBindings()
         self._setup_keybindings()
         self.control = FormattedTextControl(self._render, show_cursor=False)
@@ -47,18 +48,25 @@ class HabitTable:
 
     def _reload_table(self):
         """Reset table"""
+        
+        # Reload data
         self.DATA = (
             habits.HABITS.get_habits(self._FILTER)
             if self._FILTER
             else habits.HABITS.get_habits()
         )
         self.habit_ids = list(self.DATA.keys())
+        # Navigate to page before data
+        max_page = max(math.ceil(len(self.habit_ids) / self._ROWS_PER_PAGE) - 1, 0)
+        self.page = min(self.page, max_page)
+
+        # Reset selection
         self.selected_row = 0
-        self.page = 0
-        self.on_buttons = not (bool(self.DATA))  # start on buttons if no habits
         self.selected_button = 0
         self._action = None
+        self.on_buttons = not (bool(self.DATA))
 
+        # Set action depending on button/row
         if self.on_buttons and self._BUTTONS:
             self._action = self._BUTTONS[self.selected_button]
         elif self._ROW_ACTION:
@@ -70,7 +78,7 @@ class HabitTable:
         @self.kb.add("up")
         def _up(event):
             if not self.habit_ids and not self._BUTTONS:
-                return  # nothing to do
+                return
             max_row = (
                 min(
                     self._ROWS_PER_PAGE,

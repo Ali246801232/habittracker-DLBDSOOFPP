@@ -116,6 +116,8 @@ def test_update_habit_notes():
     habit.update({"notes": "Updated notes"})
     assert habit.notes == "Updated notes"
     assert habit.name == original_name
+
+def test_update_habit_periodicity():
     """Test updating a habit's periodicity"""
     habit = habits.Habit("test-uuid", "Test", periodicity={"amount": 1, "unit": "days"})
     new_period = {"amount": 2, "unit": "weeks"}

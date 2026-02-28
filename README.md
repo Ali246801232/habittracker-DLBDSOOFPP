@@ -89,7 +89,7 @@ Then, to interact with the table, you can:
 ## Testing
 
 Core logic is designed to be testable independently of the CLI.
-14 existing unit tests have been made using `pytest`, and can be run as follows:
+30 existing unit tests have been made using `pytest`, and can be run as follows:
 1. Install dev requirements:
     ```ps
     pip install -e .[dev]
